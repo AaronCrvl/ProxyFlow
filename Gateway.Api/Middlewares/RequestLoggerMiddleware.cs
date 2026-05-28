@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using Gateway.Api.Data;
 
 public class RequestLoggerMiddleware
 {
@@ -26,10 +27,16 @@ public class RequestLoggerMiddleware
         var reader = new StreamReader(context.Request.Body);
         await reader.ReadAsync(buffer, CancellationToken.None);
 
-        _logger.LogInformation(context.Request.Headers.ToString(), "Headers");
-        _logger.LogInformation(buffer.ToString(), "Body");
-        _logger.LogInformation(context.Request.Method.ToString(), "Method");
-        _logger.LogInformation(context.Request.Path.ToString(), "Path");
+        string header = context.Request.Headers.ToString() == null ? "" : context.Request.Headers.ToString()!,
+                body = buffer.ToString(),
+                method = context.Request.Method.ToString(),
+                path = context.Request.Path.ToString(),
+                reqTimestamp = string.Empty;
+
+        _logger.LogInformation(header, "Headers");
+        _logger.LogInformation(body, "Body");
+        _logger.LogInformation(method, "Method");
+        _logger.LogInformation(path, "Path");
 
         var timestamp = new Stopwatch();
         timestamp.Start();
@@ -37,9 +44,15 @@ public class RequestLoggerMiddleware
         await _next(context);
 
         timestamp.Stop();
-        _logger.LogInformation(timestamp.Elapsed.TotalSeconds.ToString(), "Timestamp");
+        reqTimestamp = timestamp.Elapsed.TotalSeconds.ToString();
 
-        Console.Write(_logger.ToString());
+        using (var con = new PgDbContext())
+        {
+            con.Database.EnsureCreated();
+
+            con.RequestLogs.Add(new Gateway.Api.Models.Entities.RequestLog { Headers = header, Body = body });
+            con.SaveChanges();
+        }
     }
     #endregion
 }

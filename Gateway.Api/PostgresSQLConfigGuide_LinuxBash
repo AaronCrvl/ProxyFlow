@@ -1,0 +1,6 @@
+-- Iniciando Database no Postgres
+sudo -u postgres psql
+postgres=# create database proxyflow
+postgres=# create user dbo with encrypted password 'p@ssw0rd'
+postgres=# grant all privileges on database proxyflow to dbo
+ALTER DATABASE proxyflow OWNER TO dbo
