@@ -1,48 +1,64 @@
+using Gateway.Api.Data;
+using Gateway.Api.Repositories.Implementations;
+using Gateway.Api.Repositories.Interfaces;
+using Gateway.Api.Services.Implementation;
+using Gateway.Api.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using Gateway.Api.Middlewares;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+builder.Services.AddAuthentication("Bearer").AddBearerToken("Bearer", opt =>
+{
+    opt.BearerTokenExpiration = new TimeSpan(1,0,0); // Token padrão expira em horas
+    opt.RefreshTokenExpiration = new TimeSpan(3,0,0,0); // Refresh token expira em dias
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "SpecificOrigins", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); 
+    });
+});
+
+builder.Services.AddDbContext<PgDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ILogRepository, LogRepository>();
+builder.Services.AddScoped<ILogService, LogService>();
+
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseCors("SpecificOrigins");
+
 app.UseHttpsRedirection();
-app.MapReverseProxy();
 app.UseForwardedHeaders();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseMiddleware<AuthTokenMiddleware>();
 app.UseMiddleware<RequestLoggerMiddleware>();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.MapReverseProxy();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
