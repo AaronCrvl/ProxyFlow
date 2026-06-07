@@ -1,21 +1,15 @@
 import React from "react";
 import { getLatestLogs } from "../services/log.services";
-
-type LogEntry = {
-  id: number;
-  body: string;
-  header: string;
-  method: string;
-  timestamp: string;
-};
+import type { RequestLog } from "../data/types/requestLog.data";
+import { PaginatedItemComponent } from "../components/layout/PaginatedItemComponent";
 
 const HomePage: React.FC = () => {
 
 
-  const [log, setLogs] = React.useState<LogEntry[] | null>(null);
+  const [log, setLogs] = React.useState<RequestLog[] | null>(null);
 
   const [methodFilter, setMethodFilter] = React.useState<string>("all");
-  const [logsByMethod, setLogsByMethod] = React.useState<LogEntry[]>([]);
+  const [logsByMethod, setLogsByMethod] = React.useState<RequestLog[]>([]);
 
   const handleMethodFilterChange = (method: string) => {
     setMethodFilter(method);
@@ -30,7 +24,7 @@ const HomePage: React.FC = () => {
 
   React.useEffect(() => {
     if (log === null) {
-      getLatestLogs().then((res) => setLogs(res as unknown as LogEntry[]));      
+      getLatestLogs().then((res) => setLogs(res as unknown as RequestLog[]));      
     }
   }, [log]);
 
@@ -51,7 +45,7 @@ const HomePage: React.FC = () => {
           <option value="DELETE">DELETE</option>
         </select>
         <div className="mt-4">
-          {(logsByMethod && logsByMethod.length > 0) ? logsByMethod.map((entry: LogEntry) => (
+          {(logsByMethod && logsByMethod.length > 0) ? logsByMethod.map((entry: RequestLog) => (
             <div key={entry.id} className="log-entry">
               <p><strong>Header:</strong> {entry.header}</p>
               <p><strong>Body:</strong> {entry.body}</p>
@@ -64,15 +58,7 @@ const HomePage: React.FC = () => {
       </div>
       <div className="p-2 bg-blue-200">
         <div className="p-1 text-xl">Log Overview</div>
-        {(log && log.length > 0) ? log.map((entry: LogEntry) => (
-          <div key={entry.id} className="log-entry">
-            <p><strong>Header:</strong> {entry.header}</p>
-            <p><strong>Body:</strong> {entry.body}</p>
-            <p><strong>Method:</strong> {entry.method}</p>
-            <p><strong>Timestamp:</strong> {entry.timestamp}</p>
-          </div>
-
-        )) : <p>Loading logs...</p>}
+        <PaginatedItemComponent pItems={log || []} itemsPerPage={5} dataType="logs" />
       </div>
     </div>
   );
