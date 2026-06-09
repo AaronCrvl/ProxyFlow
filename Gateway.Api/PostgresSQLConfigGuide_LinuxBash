@@ -1,0 +1,20 @@
+-- Acessando Postgres com privilégios
+sudo -u postgres psql
+
+-- Iniciando Database no Postgres com 
+postgres=# create database proxyflow
+postgres=# create user dbo with encrypted password 'p@ssw0rd'
+postgres=# grant all privileges on database proxyflow to dbo
+ALTER DATABASE proxyflow OWNER TO dbo
+
+-- Schema personalizado para logs
+CREATE SCHEMA IF NOT EXISTS logschema;
+GRANT ALL ON SCHEMA logschema TO dbo;
+ALTER ROLE dbo SET search_path TO logschema;
+
+GRANT USAGE, CREATE ON SCHEMA logschema TO dbo;
+
+GRANT ALL ON ALL TABLES IN SCHEMA logschema TO dbo;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA logschema TO dbo;
+ALTER DEFAULT PRIVILEGES IN SCHEMA logschema GRANT ALL ON TABLES TO dbo;
+ALTER DEFAULT PRIVILEGES IN SCHEMA logschema GRANT ALL ON SEQUENCES TO dbo;

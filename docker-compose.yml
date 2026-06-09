@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: gateway-postgres
+    environment:
+      POSTGRES_DB: proxyflow
+      POSTGRES_USER: dbo
+      POSTGRES_PASSWORD: P@ssw0rd
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gateway-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway-api:
+    build: .
+    container_name: gateway-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=proxyflow;User ID=dbo;Password=P@ssw0rd;
+    ports:
+      - "5000:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - gateway-network
+    restart: unless-stopped
+
+networks:
+  gateway-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
