@@ -49,13 +49,17 @@ public class RequestLoggerMiddleware
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var con = scope.ServiceProvider.GetRequiredService<PgDbContext>();
-            
-            con.RequestLogs.Add(new RequestLog 
-            { 
-                Headers = header, 
-                Body = body,     
+            _ = con.RequestLogs.Add(new RequestLog
+            {
+                Headers = header,
+                Body = body,
                 Method = method,
-                TimeStamp = reqTimestamp           
+                TimeStamp = reqTimestamp,
+                Url = context.Request.Path,
+                ResponseBody = context.Response == null ? "" : await new StreamReader(context.Response.Body).ReadToEndAsync(),
+                ResponseStatusCode = context.Response == null ? 0 : context.Response.StatusCode,
+                ClientIp = context.Request.Host.Value,
+                ServiceOrigin = context.Request.Path.ToString().Contains("webhook") ? (long)eServiceOrigin.WEBHOOK : (long)eServiceOrigin.API
             });
             
             await con.SaveChangesAsync();

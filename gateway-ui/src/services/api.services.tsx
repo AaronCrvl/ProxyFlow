@@ -11,7 +11,7 @@ const TOKEN_KEYS = {
 
 const hasValidToken = (): boolean => {
     const token = localStorage.getItem(TOKEN_KEYS.TOKEN);
-    if (!token || token === "" || token.length <= 10) return false;
+    if (!token || token === "") return false;
     
     const expiresIn = localStorage.getItem(TOKEN_KEYS.EXPIRES_IN);
     const savedAt = localStorage.getItem(TOKEN_KEYS.SAVED_AT);
