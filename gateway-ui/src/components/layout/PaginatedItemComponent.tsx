@@ -9,10 +9,10 @@ interface PaginatedItemProps {
   dataType: dataType;
 }
 
-export const PaginatedItemComponent = ({ 
-  pItems, 
-  itemsPerPage, 
-  dataType 
+export const PaginatedItemComponent = ({
+  pItems,
+  itemsPerPage,
+  dataType
 }: PaginatedItemProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -28,9 +28,11 @@ export const PaginatedItemComponent = ({
         return (currentViewItems as RequestLog[]).map((entry) => (
           <div key={entry.id} className="log-entry">
             <p><strong>Header:</strong> {entry.header}</p>
-            <p><strong>Body:</strong> {entry.body}</p>
-            <p><strong>Method:</strong> {entry.method}</p>
-            <p><strong>Timestamp:</strong> {entry.timestamp}</p>
+            <div className="invisible transition delay-150 duration-300 ease-in-out hover:visible">
+              <p><strong>Body:</strong> {entry.body}</p>
+              <p><strong>Method:</strong> {entry.method}</p>
+              <p><strong>Timestamp:</strong> {entry.timestamp}</p>
+            </div>
           </div>
         ));
       default:
@@ -43,14 +45,14 @@ export const PaginatedItemComponent = ({
       <div>{renderContent()}</div>
       <div className="p-2 bg-blue-400">Page {currentPage}</div>
       <div>
-        <button 
-          onClick={() => setCurrentPage(p => p - 1)} 
+        <button
+          onClick={() => setCurrentPage(p => p - 1)}
           disabled={currentPage === 1}
         >
           Previous
         </button>
-        <button 
-          onClick={() => setCurrentPage(p => p + 1)} 
+        <button
+          onClick={() => setCurrentPage(p => p + 1)}
           disabled={currentPage === totalPages || totalPages === 0}
         >
           Next
