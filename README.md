@@ -8,17 +8,7 @@ Build, test, and mock APIs in one tool. No complexity, full control.
 
 ## Schema
 
-You send requests ──► ProxyFlow backend ──► stores in DB
-                            │
-                            ▼
-                    React Dashboard
-                    (just reads the DB)
-                            │
-                    ┌───────┼───────┐
-                    ▼       ▼       ▼
-              List logs  Detail view  Webhook history
-              (filter)   (headers,   (retry, curl export)
-                          body)
+<img width="1266" height="658" alt="image" src="https://github.com/user-attachments/assets/2ebe302e-5f0b-46df-9488-c4e6c9284d12" />
 
 ---
 
