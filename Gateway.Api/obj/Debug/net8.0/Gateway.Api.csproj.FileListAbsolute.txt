@@ -1,3 +1,11 @@
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.csproj.AssemblyReference.cache
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.GeneratedMSBuildEditorConfig.editorconfig
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.AssemblyInfoInputs.cache
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.AssemblyInfo.cs
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.csproj.CoreCompileInputs.cache
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.MvcApplicationPartsAssemblyInfo.cs
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.MvcApplicationPartsAssemblyInfo.cache
+/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.sourcelink.json
 /home/usuario/api-gateway/Gateway.Api/bin/Debug/net8.0/appsettings.Development.json
 /home/usuario/api-gateway/Gateway.Api/bin/Debug/net8.0/appsettings.json
 /home/usuario/api-gateway/Gateway.Api/bin/Debug/net8.0/Gateway.Api
@@ -90,14 +98,6 @@
 /home/usuario/api-gateway/Gateway.Api/bin/Debug/net8.0/tr/Microsoft.CodeAnalysis.Workspaces.resources.dll
 /home/usuario/api-gateway/Gateway.Api/bin/Debug/net8.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.resources.dll
 /home/usuario/api-gateway/Gateway.Api/bin/Debug/net8.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.csproj.AssemblyReference.cache
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.GeneratedMSBuildEditorConfig.editorconfig
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.AssemblyInfoInputs.cache
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.AssemblyInfo.cs
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.csproj.CoreCompileInputs.cache
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.MvcApplicationPartsAssemblyInfo.cs
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.MvcApplicationPartsAssemblyInfo.cache
-/home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/Gateway.Api.sourcelink.json
 /home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/staticwebassets.build.json
 /home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/staticwebassets.development.json
 /home/usuario/api-gateway/Gateway.Api/obj/Debug/net8.0/staticwebassets/msbuild.Gateway.Api.Microsoft.AspNetCore.StaticWebAssets.props

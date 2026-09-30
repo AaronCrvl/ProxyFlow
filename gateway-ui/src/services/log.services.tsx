@@ -1,6 +1,7 @@
+import type { RequestLog } from "../data/types/requestLog.data";
 import api from "./api.services";
 
-export const getLatestLogs = () => {
+export const getLatestLogs = (): Promise<RequestLog[]> => {
     return api.get('log/getLatest')
         .then(response => response.data)
         .catch(error => {
@@ -9,7 +10,7 @@ export const getLatestLogs = () => {
         });
 }
 
-export const getLatestLogsByServiceOrigin = (serviceOrigin: number) => {
+export const getLatestLogsByServiceOrigin = (serviceOrigin: number): Promise<RequestLog[]> => {
     return api.get(`log/getLatestByServiceOrigin?originId=${serviceOrigin}`)
         .then(response => response.data)
         .catch(error => {

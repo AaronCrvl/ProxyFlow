@@ -6,6 +6,22 @@ Build, test, and mock APIs in one tool. No complexity, full control.
 
 ---
 
+## Schema
+
+You send requests ──► ProxyFlow backend ──► stores in DB
+                            │
+                            ▼
+                    React Dashboard
+                    (just reads the DB)
+                            │
+                    ┌───────┼───────┐
+                    ▼       ▼       ▼
+              List logs  Detail view  Webhook history
+              (filter)   (headers,   (retry, curl export)
+                          body)
+
+---
+
 ## Why
 
 Existing tools are fragmented:
