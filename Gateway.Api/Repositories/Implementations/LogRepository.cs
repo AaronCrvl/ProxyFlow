@@ -13,10 +13,13 @@ namespace Gateway.Api.Repositories.Implementations
             this.con = _con;
         }
 
-        public async Task<IEnumerable<RequestLog>> getLatestLogsAsync() => 
+        public async Task<IEnumerable<RequestLog>> getLatestLogsAsync() =>
             await con.RequestLogs.ToListAsync();
 
         public async Task<IEnumerable<RequestLog>> getLatestLogsByServiceOriginAsync(long originId) =>
             await con.RequestLogs.Where(req => req.ServiceOrigin == originId).ToListAsync();
+
+        public async Task<IEnumerable<RequestLog>> getWebHookCallsAsync() =>
+            await con.RequestLogs.Where(req => req.ServiceOrigin == (long)eServiceOrigin.WEBHOOK).ToListAsync();      
     }
 }

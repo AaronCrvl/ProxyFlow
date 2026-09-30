@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using Gateway.Api.Data;
 using Gateway.Api.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ public class RequestLoggerMiddleware
     #region Private Variables
     private readonly ILogger<RequestLoggerMiddleware> _logger;
     private readonly RequestDelegate _next;
-    private readonly IServiceScopeFactory _serviceScopeFactory; //TODO: LogService CRUD
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     #endregion
 
     #region Constructor
@@ -23,13 +24,24 @@ public class RequestLoggerMiddleware
 
     #region Public Functions
     public async Task InvokeAsync(HttpContext context)
-    {    
+    {
         context.Request.EnableBuffering();
 
-        var body = await new StreamReader(context.Request.Body).ReadToEndAsync();
-        context.Request.Body.Position = 0; 
+        string body;
+        using (var reader = new StreamReader(
+            context.Request.Body,
+            Encoding.UTF8,
+            detectEncodingFromByteOrderMarks: false,
+            leaveOpen: true))
+        {
+            body = await reader.ReadToEndAsync();
+        }
+        context.Request.Body.Position = 0;
 
-        string header = context.Request.Headers.ToString() ?? "";
+        var headers = context.Request.Headers
+            .ToDictionary(h => h.Key, h => h.Value.ToString());
+
+        string header = JsonSerializer.Serialize(headers);
         string method = context.Request.Method;
         string path = context.Request.Path.ToString();
 
@@ -45,7 +57,7 @@ public class RequestLoggerMiddleware
 
         timestamp.Stop();
         string reqTimestamp = timestamp.Elapsed.TotalSeconds.ToString();
-        
+
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var con = scope.ServiceProvider.GetRequiredService<PgDbContext>();
@@ -61,7 +73,7 @@ public class RequestLoggerMiddleware
                 ClientIp = context.Request.Host.Value,
                 ServiceOrigin = context.Request.Path.ToString().Contains("webhook") ? (long)eServiceOrigin.WEBHOOK : (long)eServiceOrigin.API
             });
-            
+
             await con.SaveChangesAsync();
         }
     }

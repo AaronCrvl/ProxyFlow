@@ -36,5 +36,12 @@ namespace Gateway.Api.Controllers
             var result = await this.service.GetLatestLogsByServiceOrigin(originId);
             return new OkObjectResult(result);
         }
+        
+        [HttpGet("getWebHookCalls")]
+        public async Task<ActionResult> GetWebHookCallsByMEthod(string method)
+        {
+            var result = await this.service.GetWebHookCallsByMethod(method);
+            return new OkObjectResult(result);
+        }
     }
 }
