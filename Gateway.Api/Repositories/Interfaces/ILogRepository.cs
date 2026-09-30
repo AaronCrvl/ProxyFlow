@@ -10,5 +10,6 @@ namespace Gateway.Api.Repositories.Interfaces
     {
         Task<IEnumerable<RequestLog>> getLatestLogsAsync();
         Task<IEnumerable<RequestLog>> getLatestLogsByServiceOriginAsync(long originId);
+        Task<IEnumerable<RequestLog>> getWebHookCallsAsync();
     }
 }

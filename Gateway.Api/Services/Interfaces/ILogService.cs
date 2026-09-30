@@ -7,7 +7,8 @@ namespace Gateway.Api.Services.Interfaces
 {
     public interface ILogService
     {
-        Task<IEnumerable<Database.Models.DTO.RequestLogDTO>> GetLatestLogs();        
-        Task<IEnumerable<Database.Models.DTO.RequestLogDTO>> GetLatestLogsByServiceOrigin(long originId);        
+        Task<IEnumerable<Database.Models.DTO.RequestLogDTO>> GetLatestLogs();
+        Task<IEnumerable<Database.Models.DTO.RequestLogDTO>> GetLatestLogsByServiceOrigin(long originId);
+        Task<IEnumerable<IGrouping<string, Database.Models.DTO.RequestLogDTO>>> GetWebHookCallsByMethod(string? method);
     }
 }
