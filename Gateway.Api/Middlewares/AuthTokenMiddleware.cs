@@ -24,7 +24,7 @@ namespace Gateway.Api.Middlewares
             bool authPath = context.Request.Path.Value?.Contains("Auth") ?? false;    
             bool containsAuthHeader = headers.FirstOrDefault(h => h.Key == "Authorization").Value.ToString().Length <= 0;                
 
-            if (containsAuthHeader && authPath)
+            if (containsAuthHeader && !authPath)
                 throw new Exception("No auth header identified.");
 
             await next(context);

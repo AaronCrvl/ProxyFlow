@@ -9,5 +9,6 @@ namespace Gateway.Api.Repositories.Interfaces
     public interface ILogRepository
     {
         Task<IEnumerable<RequestLog>> getLatestLogsAsync();
+        Task<IEnumerable<RequestLog>> getLatestLogsByServiceOriginAsync(long originId);
     }
 }

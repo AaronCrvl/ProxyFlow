@@ -35,13 +35,3 @@ ProxyFlow fixes this.
 **Backend:** .NET 8 + YARP + EF Core + PostgreSQL + SignalR + Jint  
 **Frontend:** React 18 + Vite + Tailwind + Monaco Editor  
 **DevOps:** Docker Compose + GitHub Actions
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/yourusername/proxyflow.git
-cd proxyflow
-docker-compose up -d
-open http://localhost:5173

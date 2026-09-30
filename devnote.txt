@@ -1,3 +1,0 @@
-containes
- ✔ Container gateway-postgres Healthy                                      10.7s
- ✔ Container gateway-api      Started    

@@ -27,7 +27,36 @@ namespace Gateway.Api.Services.Implementation
                         body = req.Body,
                         headers = req.Headers,
                         method = req.Method,
-                        timestamp = req.TimeStamp                        
+                        timestamp = req.TimeStamp,
+                        clientIp = req.ClientIp,
+                        responseBody = req.ResponseBody,
+                        responseStatusCode = req.ResponseStatusCode,
+                        serviceOrigin = req.ServiceOrigin                
+                    }
+                )
+            );
+
+            return dtoList;
+        }
+
+        public async Task<IEnumerable<RequestLogDTO>> GetLatestLogsByServiceOrigin(long originId)
+        {
+            var dtoList = new List<RequestLogDTO>();
+            IEnumerable<RequestLog> rawDatabaseList = await repo.getLatestLogsByServiceOriginAsync(originId);
+
+            rawDatabaseList.ToList().ForEach(req =>
+                dtoList.Add(
+                    new RequestLogDTO
+                    {
+                        id = req.Id,
+                        body = req.Body,
+                        headers = req.Headers,
+                        method = req.Method,
+                        timestamp = req.TimeStamp,
+                        clientIp = req.ClientIp,
+                        responseBody = req.ResponseBody,
+                        responseStatusCode = req.ResponseStatusCode,
+                        serviceOrigin = req.ServiceOrigin                                     
                     }
                 )
             );

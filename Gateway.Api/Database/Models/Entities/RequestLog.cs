@@ -19,5 +19,20 @@ namespace Gateway.Api.Models.Entities
 
         [Column("TimeStamp")]
         public string TimeStamp { get; set; } = "";
+
+        [Column("ResponseStatusCode")]
+        public long ResponseStatusCode { get; set; } = 0;
+
+        [Column("ResponseBody")]
+        public string ResponseBody { get; set; } = "";
+
+        [Column("Url")]
+        public string Url { get; set; } = "";
+
+        [Column("ClientIp")]
+        public string ClientIp { get; set; } = "";
+
+        [Column("ServiceOrigin")]
+        public long ServiceOrigin { get; set; } = (long)eServiceOrigin.API;
     }
 }

@@ -36,5 +36,12 @@ namespace Gateway.Api.Controllers
             var result = await this.service.GetLatestLogs();
             return new OkObjectResult(result);
         }
+
+        [HttpGet("getLatestByServiceOrigin/originId={originId}")]
+        public async Task<ActionResult> GetLatestByServiceOrigin(long originId)
+        {
+            var result = await this.service.GetLatestLogsByServiceOrigin(originId);
+            return new OkObjectResult(result);
+        }
     }
 }
