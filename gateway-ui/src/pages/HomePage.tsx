@@ -1,7 +1,7 @@
 import React from "react";
 import { getLatestLogs, getLatestLogsByServiceOrigin } from "../services/log.services";
 import type { RequestLog } from "../data/types/requestLog.data";
-import { LogsFilterComponent } from "../components/logs/LogsFilterComponent";
+import { LogsFilterComponent } from "../components/logsUi/LogsFilterComponent";
 import AvailableMethodsComponent from "../components/methods/AvailableMethodsComponent";
 
 const HomePage: React.FC = () => {
