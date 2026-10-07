@@ -2,23 +2,26 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Gateway.Api.Data;
+using Gateway.Api.Hub;
 using Gateway.Api.Models.Entities;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 
 public class RequestLoggerMiddleware
 {
     #region Private Variables
+    private readonly LogHub _logHub;
     private readonly ILogger<RequestLoggerMiddleware> _logger;
     private readonly RequestDelegate _next;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     #endregion
 
     #region Constructor
-    public RequestLoggerMiddleware(RequestDelegate next, ILogger<RequestLoggerMiddleware> logger, IServiceScopeFactory serviceScopeFactory)
+    public RequestLoggerMiddleware(RequestDelegate next, ILogger<RequestLoggerMiddleware> logger, IServiceScopeFactory serviceScopeFactory, LogHub hub)
     {
         _next = next;
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
+        _logHub = hub;
     }
     #endregion
 
@@ -61,7 +64,7 @@ public class RequestLoggerMiddleware
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var con = scope.ServiceProvider.GetRequiredService<PgDbContext>();
-            _ = con.RequestLogs.Add(new RequestLog
+            var req = new RequestLog
             {
                 Headers = header,
                 Body = body,
@@ -72,9 +75,13 @@ public class RequestLoggerMiddleware
                 ResponseStatusCode = context.Response == null ? 0 : context.Response.StatusCode,
                 ClientIp = context.Request.Host.Value,
                 ServiceOrigin = context.Request.Path.ToString().Contains("webhook") ? (long)eServiceOrigin.WEBHOOK : (long)eServiceOrigin.API
-            });
+            };
+            _ = con.RequestLogs.Add(req);
+
+            
 
             await con.SaveChangesAsync();
+            await _logHub.Clients.All.SendAsync("LogUpdate", req); 
         }
     }
     #endregion

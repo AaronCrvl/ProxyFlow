@@ -1,19 +1,24 @@
 import React from "react";
-import { getLatestLogs, getLatestLogsByServiceOrigin } from "../services/log.services";
+import { getLatestLogs, getLatestLogsByServiceOrigin, hubLatestLogs } from "../services/log.services";
 import type { RequestLog } from "../data/types/requestLog.data";
 import { LogsFilterComponent } from "../components/logsUi/LogsFilterComponent";
 import AvailableMethodsComponent from "../components/methods/AvailableMethodsComponent";
 
 const HomePage: React.FC = () => {
+  const [tab, setTab] = React.useState<number>(0);
   const [logs, setLogs] = React.useState<RequestLog[]>([]);
 
-  const handleTabSelection = (tab: number) => {
-    const request = tab === 1 ? getLatestLogs() : getLatestLogsByServiceOrigin(2);
+  const handleTabSelection = (selectedTab: number) => {
+    setTab(selectedTab);
+    const request = tab === 0 ? getLatestLogs() : getLatestLogsByServiceOrigin(2);
     request.then((res) => setLogs(res as unknown as RequestLog[]));
   };
 
   React.useEffect(() => {
-    handleTabSelection(1);
+    if (tab === 0) return;
+
+    const request = hubLatestLogs(tab);
+    request.then((res) => setLogs(res as unknown as RequestLog[]));
   }, []);
 
   return (

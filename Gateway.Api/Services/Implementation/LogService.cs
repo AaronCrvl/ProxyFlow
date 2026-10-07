@@ -1,5 +1,5 @@
 using Gateway.Api.Database.Models.DTO;
-using Gateway.Api.Models.Entities;
+using Gateway.Api.Helpers;
 using Gateway.Api.Repositories.Interfaces;
 using Gateway.Api.Services.Interfaces;
 
@@ -17,19 +17,19 @@ namespace Gateway.Api.Services.Implementation
         public async Task<IEnumerable<RequestLogDTO>> GetLatestLogs()
         {
             var logs = await repo.getLatestLogsAsync();
-            return logs.Select(ToDto).ToList();
+            return logs.Select(DTOHandle.ToRequestLogDto).ToList();
         }
 
         public async Task<IEnumerable<RequestLogDTO>> GetLatestLogsByServiceOrigin(long originId)
         {
             var logs = await repo.getLatestLogsByServiceOriginAsync(originId);
-            return logs.Select(ToDto).ToList();
+            return logs.Select(DTOHandle.ToRequestLogDto).ToList();
         }
 
         public async Task<IEnumerable<IGrouping<string, RequestLogDTO>>> GetWebHookCallsByMethod(string method)
         {
             var logs = await repo.getWebHookCallsAsync();
-            var dtos = logs.Select(ToDto);
+            var dtos = logs.Select(DTOHandle.ToRequestLogDto);
 
             if (!string.IsNullOrEmpty(method))            
                 dtos = dtos.Where(d => d.method == method);
@@ -37,19 +37,6 @@ namespace Gateway.Api.Services.Implementation
             return dtos
                 .GroupBy(d => d.method)
                 .ToList();
-        }
-
-        private static RequestLogDTO ToDto(RequestLog req) => new RequestLogDTO
-        {
-            id = req.Id,
-            body = req.Body,
-            headers = req.Headers,
-            method = req.Method,
-            timestamp = req.TimeStamp,
-            clientIp = req.ClientIp,
-            responseBody = req.ResponseBody,
-            responseStatusCode = req.ResponseStatusCode,
-            serviceOrigin = req.ServiceOrigin
-        };
+        }    
     }
 }
