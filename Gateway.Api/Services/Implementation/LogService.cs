@@ -20,13 +20,19 @@ namespace Gateway.Api.Services.Implementation
             return logs.Select(DTOHandle.ToRequestLogDto).ToList();
         }
 
+        public async Task<IEnumerable<RequestLogDTO>> GetLatestLogsByMethod(string method)
+        {
+            var logs = await repo.getLatestLogsByMethodAsync(method);
+            return logs.Select(DTOHandle.ToRequestLogDto).ToList();
+        }
+
         public async Task<IEnumerable<RequestLogDTO>> GetLatestLogsByServiceOrigin(long originId)
         {
             var logs = await repo.getLatestLogsByServiceOriginAsync(originId);
             return logs.Select(DTOHandle.ToRequestLogDto).ToList();
         }
 
-        public async Task<IEnumerable<IGrouping<string, RequestLogDTO>>> GetWebHookCallsByMethod(string method)
+        public async Task<IEnumerable<IGrouping<string, RequestLogDTO>>> GetWebHookCallsByMethod(string? method)
         {
             var logs = await repo.getWebHookCallsAsync();
             var dtos = logs.Select(DTOHandle.ToRequestLogDto);

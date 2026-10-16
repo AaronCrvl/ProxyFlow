@@ -24,21 +24,27 @@ namespace Gateway.Api.Controllers
         }
 
         [HttpGet("getLatestByMethod")]
-        public async Task<ActionResult> GetLatestLogsByMethodAsync()
+        public async Task<ActionResult> GetLatestLogsByMethodAsync([FromQuery] string? method = null)
         {
-            var result = await this.service.GetLatestLogs();
+            if (string.IsNullOrWhiteSpace(method))
+                return BadRequest("method is required.");
+
+            var result = await this.service.GetLatestLogsByMethod(method);
             return new OkObjectResult(result);
         }
 
-        [HttpGet("getLatestByServiceOrigin/originId={originId}")]
-        public async Task<ActionResult> GetLatestByServiceOrigin(long originId)
+        [HttpGet("getLatestByServiceOrigin")]
+        public async Task<ActionResult> GetLatestByServiceOrigin([FromQuery] long originId)
         {
+            if (originId is not (0 or 1))
+                return BadRequest("originId must be 0 (WEBHOOK) or 1 (API).");
+
             var result = await this.service.GetLatestLogsByServiceOrigin(originId);
             return new OkObjectResult(result);
         }
         
         [HttpGet("getWebHookCalls")]
-        public async Task<ActionResult> GetWebHookCallsByMEthod(string method)
+        public async Task<ActionResult> GetWebHookCallsByMethod([FromQuery] string? method = null)
         {
             var result = await this.service.GetWebHookCallsByMethod(method);
             return new OkObjectResult(result);

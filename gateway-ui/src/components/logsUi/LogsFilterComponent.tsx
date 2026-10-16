@@ -5,6 +5,8 @@ import { PaginatedItemComponent } from "../layout/PaginatedItemComponent";
 interface LogsFilterComponentProps {
   logs: RequestLog[];
   itemsPerPage?: number;
+  isLoading: boolean;
+  error: string | null;
 }
 
 interface AppliedFilters {
@@ -23,6 +25,8 @@ const STATUS_CODES = [
 export const LogsFilterComponent: React.FC<LogsFilterComponentProps> = ({
   logs,
   itemsPerPage = 5,
+  isLoading,
+  error,
 }) => {
 
   const [methodFilter, setMethodFilter] = React.useState<string>("all");
@@ -42,7 +46,7 @@ export const LogsFilterComponent: React.FC<LogsFilterComponentProps> = ({
         applied.method === "all" || entry.method === applied.method;
       const matchesStatus =
         applied.statusCode === "all" ||
-        entry.statusCode === parseInt(applied.statusCode, 10);
+        entry.responseStatusCode === parseInt(applied.statusCode, 10);
       const matchesPath =
         applied.path === "all" || entry.url === applied.path;
       return matchesMethod && matchesStatus && matchesPath;
@@ -104,11 +108,29 @@ export const LogsFilterComponent: React.FC<LogsFilterComponentProps> = ({
       </button>
 
       <div className="mt-4">
-        <PaginatedItemComponent
-          pItems={filteredLogs}
-          itemsPerPage={itemsPerPage}
-          dataType="logs"
-        />
+        {isLoading ? (
+          <div className="skeleton-list" role="status" aria-label="Loading request logs">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div className="skeleton-log-card" key={index} aria-hidden="true">
+                <span className="skeleton skeleton-line skeleton-line-wide" />
+                <span className="skeleton skeleton-line" />
+                <span className="skeleton skeleton-line skeleton-line-short" />
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <p className="state-message" role="alert">{error}</p>
+        ) : logs.length === 0 ? (
+          <p className="state-message">No request logs yet.</p>
+        ) : filteredLogs.length === 0 ? (
+          <p className="state-message">No request logs match these filters.</p>
+        ) : (
+          <PaginatedItemComponent
+            pItems={filteredLogs}
+            itemsPerPage={itemsPerPage}
+            dataType="logs"
+          />
+        )}
       </div>
     </div>
   );

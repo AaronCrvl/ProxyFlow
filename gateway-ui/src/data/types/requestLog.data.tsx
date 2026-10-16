@@ -1,10 +1,12 @@
 export type RequestLog = {
   id: number;
   body: string;
-  statusCode: number;
+  responseStatusCode: number;
+  responseBody: string;
   headers: string;
   method: string;
   timestamp: string;
-  url:string;
-  serviceOrigin : number;
-};  
+  url: string;
+  clientIp: string;
+  serviceOrigin: number;
+};

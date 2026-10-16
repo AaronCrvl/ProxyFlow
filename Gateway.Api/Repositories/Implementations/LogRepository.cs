@@ -14,10 +14,19 @@ namespace Gateway.Api.Repositories.Implementations
         }
 
         public async Task<IEnumerable<RequestLog>> getLatestLogsAsync() =>
-            await con.RequestLogs.ToListAsync();
+            await con.RequestLogs.OrderByDescending(req => req.Id).ToListAsync();
+
+        public async Task<IEnumerable<RequestLog>> getLatestLogsByMethodAsync(string method) =>
+            await con.RequestLogs
+                .Where(req => req.Method == method)
+                .OrderByDescending(req => req.Id)
+                .ToListAsync();
 
         public async Task<IEnumerable<RequestLog>> getLatestLogsByServiceOriginAsync(long originId) =>
-            await con.RequestLogs.Where(req => req.ServiceOrigin == originId).ToListAsync();
+            await con.RequestLogs
+                .Where(req => req.ServiceOrigin == originId)
+                .OrderByDescending(req => req.Id)
+                .ToListAsync();
 
         public async Task<IEnumerable<RequestLog>> getWebHookCallsAsync() =>
             await con.RequestLogs.Where(req => req.ServiceOrigin == (long)eServiceOrigin.WEBHOOK).ToListAsync();      

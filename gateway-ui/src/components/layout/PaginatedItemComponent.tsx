@@ -4,7 +4,7 @@ import type { RequestLog } from "../../data/types/requestLog.data";
 type dataType = "logs";
 
 interface PaginatedItemProps {
-  pItems: any[];
+  pItems: RequestLog[];
   itemsPerPage: number;
   dataType: dataType;
 }
@@ -16,14 +16,15 @@ export const PaginatedItemComponent = ({
 }: PaginatedItemProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const currentViewItems = React.useMemo(() => {
-    return pItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  }, [currentPage, pItems, itemsPerPage]);
-
   const totalPages = Math.ceil(pItems.length / itemsPerPage);
+  const visiblePage = Math.min(currentPage, totalPages);
+
+  const currentViewItems = React.useMemo(() => {
+    return pItems.slice((visiblePage - 1) * itemsPerPage, visiblePage * itemsPerPage);
+  }, [visiblePage, pItems, itemsPerPage]);
 
   // RETRY WEBHOOK CALL
-  const [retryReponse, setRetryResponse] = React.useState<any>(null);
+  const [retryReponse, setRetryResponse] = React.useState<unknown>(null);
   const handleRetry = async (entry: RequestLog) => {
     const res = await fetch(entry.url, {
       method: 'POST',
@@ -58,9 +59,12 @@ export const PaginatedItemComponent = ({
             <p><strong>Header:</strong> {JSON.stringify(entry.headers)}</p>
             <div className="invisible transition delay-150 duration-300 ease-in-out hover:visible">
               <p className="text-sm text-black bg-gray-200 p-2 flex-wrap"><strong>Body:</strong> {JSON.stringify(entry.body)}</p>
+              <p><strong>Response status:</strong> {entry.responseStatusCode}</p>
+              <p><strong>Response body:</strong> {entry.responseBody}</p>
               <p><strong>Method:</strong> {entry.method}</p>
               <p><strong>Timestamp:</strong> {entry.timestamp}</p>
               <p><strong>Path:</strong> {entry.url}</p>
+              <p><strong>Client IP:</strong> {entry.clientIp}</p>
               <p><strong>Origin:</strong> {entry.serviceOrigin}</p>
               {
                 entry.serviceOrigin === 1 &&
@@ -68,8 +72,8 @@ export const PaginatedItemComponent = ({
                   onClick={() => handleRetry(entry)}>Retry</button>
               }
               {
-                retryReponse && entry.serviceOrigin === 1 &&
-                <p className="text-sm text-black bg-gray-200 p-2 flex-wrap"><strong>Body:</strong> {retryReponse}</p>
+                retryReponse !== null && entry.serviceOrigin === 1 &&
+                  <p className="text-sm text-black bg-gray-200 p-2 flex-wrap"><strong>Body:</strong> {JSON.stringify(retryReponse)}</p>
               }
               <button className="bg-green-500 text-white p-2 rounded mt-2"
                 onClick={() => handleCopyCurl(entry)}>Copy as CURL</button>
@@ -84,17 +88,17 @@ export const PaginatedItemComponent = ({
   return (
     <div className="paginated-item">
       <div>{renderContent()}</div>
-      <div className="p-2 bg-blue-400">Page {currentPage}</div>
+      <div className="p-2 bg-blue-400">Page {visiblePage} of {totalPages}</div>
       <div>
         <button
-          onClick={() => setCurrentPage(p => p - 1)}
-          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(visiblePage - 1)}
+          disabled={visiblePage === 1}
         >
           Previous
         </button>
         <button
-          onClick={() => setCurrentPage(p => p + 1)}
-          disabled={currentPage === totalPages || totalPages === 0}
+          onClick={() => setCurrentPage(visiblePage + 1)}
+          disabled={visiblePage === totalPages || totalPages === 0}
         >
           Next
         </button>

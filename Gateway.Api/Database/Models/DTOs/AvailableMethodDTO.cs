@@ -7,9 +7,9 @@ namespace Gateway.Api.Database.Models.DTOs
 {
     public class AvailableMethodDTO
     {
-        public string method { get; set; }
-        public string path { get; set; }
-        public string groupName { get; set; }
+        public string method { get; set; } = "";
+        public string path { get; set; } = "";
+        public string groupName { get; set; } = "";
 
     }
 }

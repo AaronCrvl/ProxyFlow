@@ -54,14 +54,15 @@ app.UseCors("SpecificOrigins");
 app.UseHttpsRedirection();
 app.UseForwardedHeaders();
 
+app.UseMiddleware<AuthTokenMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<AuthTokenMiddleware>();
 app.UseMiddleware<RequestLoggerMiddleware>();
 
 app.MapReverseProxy();
 app.MapControllers();
+app.MapHub<Gateway.Api.Hub.LogHub>("/hubs/logs");
 
 // MOCKED ENDPOINTS
 // Products ---------------------------->
