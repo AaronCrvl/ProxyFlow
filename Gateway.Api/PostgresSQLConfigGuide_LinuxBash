@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS logschema."RequestLogs" (
     "ResponseBody" TEXT,
     "Url" VARCHAR(500),
     "ClientIp" VARCHAR(100),    
+    "ServiceOrigin" VARCHAR(10),    
 );
 
 -- Create indexes for better query performance (optional but recommended)
@@ -38,6 +39,7 @@ CREATE INDEX IF NOT EXISTS idx_requestlogs_method ON logschema."RequestLogs" ("M
 CREATE INDEX IF NOT EXISTS idx_requestlogs_statuscode ON logschema."RequestLogs" ("ResponseStatusCode");
 CREATE INDEX IF NOT EXISTS idx_requestlogs_clientip ON logschema."RequestLogs" ("ClientIp");
 CREATE INDEX IF NOT EXISTS idx_requestlogs_url ON logschema."RequestLogs" ("Url");
+CREATE INDEX IF NOT EXISTS idx_requestlogs_serviceorigin ON logschema."RequestLogs" ("ServiceOrigin");
 
 -- Grant privileges on the table and its sequence
 GRANT ALL ON logschema."RequestLogs" TO dbo;
@@ -54,3 +56,4 @@ COMMENT ON COLUMN logschema."RequestLogs"."ResponseStatusCode" IS 'HTTP response
 COMMENT ON COLUMN logschema."RequestLogs"."ResponseBody" IS 'Response body (TEXT)';
 COMMENT ON COLUMN logschema."RequestLogs"."Url" IS 'Request URL (VARCHAR 500)';
 COMMENT ON COLUMN logschema."RequestLogs"."ClientIp" IS 'Client IP address (VARCHAR 100)';
+COMMENT ON COLUMN logschema."RequestLogs"."ServiceOrigin" IS 'Origin of the service (VARCHAR 10)';

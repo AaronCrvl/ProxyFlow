@@ -1,5 +1,6 @@
 import type { RequestLog } from "../data/types/requestLog.data";
-import api from "./api.services";
+import { HubConnectionBuilder } from "@microsoft/signalr";
+import api, { API_BASE_URL, getAccessToken } from "./api.services";
 
 export const getLatestLogs = (): Promise<RequestLog[]> => {
     return api.get('log/getLatest')
@@ -17,4 +18,15 @@ export const getLatestLogsByServiceOrigin = (serviceOrigin: number): Promise<Req
             console.error('Error fetching latest logs:', error);
             throw error;
         });
+}
+
+export const createLogHubConnection = () => {
+        const hubBaseUrl = API_BASE_URL.replace(/\/api\/?$/, "");
+
+        return new HubConnectionBuilder()
+            .withUrl(`${hubBaseUrl}/hubs/logs`, {
+                accessTokenFactory: getAccessToken,
+            })
+            .withAutomaticReconnect()
+            .build();
 }

@@ -25,9 +25,9 @@ namespace Gateway.Api.Controllers
                 .SelectMany(group => group.Items)
                 .Select(description => new AvailableMethodDTO
                 {
-                    method = description.HttpMethod,
-                    path = description.RelativePath,
-                    groupName = description.GroupName
+                    method = description.HttpMethod ?? "",
+                    path = description.RelativePath ?? "",
+                    groupName = description.GroupName ?? ""
                 });
 
             return Ok(methods);

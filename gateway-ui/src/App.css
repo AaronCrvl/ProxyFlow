@@ -1,5 +1,73 @@
 @import "tailwindcss";
 
+.skeleton-list {
+  display: grid;
+  gap: 12px;
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.skeleton-log-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.skeleton {
+  display: block;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--code-bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-method {
+  width: 30%;
+}
+
+.skeleton-path {
+  width: 55%;
+}
+
+.skeleton-line {
+  width: 70%;
+}
+
+.skeleton-line-wide {
+  width: 90%;
+}
+
+.skeleton-line-short {
+  width: 45%;
+}
+
+.state-message {
+  padding: 24px 16px;
+  color: var(--text);
+  text-align: center;
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
