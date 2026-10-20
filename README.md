@@ -1,3 +1,4 @@
+
 # ProxyFlow
 
 **Self-hosted API Gateway + Webhook Testing Studio**
@@ -46,7 +47,12 @@ ProxyFlow fixes this.
 
 ## Demo
 
-[Watch the ProxyFlow dashboard recording](docs/demo-video/proxyflow-dashboard-demo.webm).
+[Watch the ProxyFlow dashboard recording(NO VIDEO BUGS)](docs/demo-video/proxyflow-dashboard-demo.webm).
+
+https://github.com/user-attachments/assets/4a0af711-59a1-4ce9-895a-8863a1ac470e
+
+
+
 
 ## Run in development
 
