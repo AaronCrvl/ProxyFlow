@@ -1,17 +1,6 @@
 import React from "react";
-import type { Theme, ThemeContextValue } from "../data/types/theme.data";
-
-const ThemeContext = React.createContext<ThemeContextValue | null>(null);
-
-const getInitialTheme = (): Theme => {
-  try {
-    const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark") return saved;
-  } catch {}
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-};
-
+import { getInitialTheme, ThemeContext } from "./theme";
+import type { Theme } from "../data/types/theme.data";
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
@@ -23,8 +12,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     document.documentElement.classList.toggle("dark", theme === "dark");
 
     try {
-      localStorage.setItem("theme", theme);
-    } catch {}
+      localStorage.setItem("themePreference", theme);
+    } catch (error: unknown) {
+      console.warn("Could not save the theme preference.", error);
+    }
   }, [theme]);
 
   const toggleTheme = () => {
@@ -36,11 +27,4 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       {children}
     </ThemeContext.Provider>
   );
-};
-
-export const useTheme = (): ThemeContextValue => {
-  const ctx = React.useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used inside <ThemeProvider>");
-
-  return ctx;
 };
