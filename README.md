@@ -1,4 +1,3 @@
-
 # ProxyFlow
 
 **Self-hosted API Gateway + Webhook Testing Studio**
@@ -9,11 +8,15 @@ Build, test, and mock APIs in one tool. No complexity, full control.
 
 ---
 
-## Schema
 
-<img width="1266" height="658" alt="image" src="https://github.com/user-attachments/assets/2ebe302e-5f0b-46df-9488-c4e6c9284d12" />
+## Architecture
+
+https://github.com/user-attachments/assets/0930604a-0fda-4884-8f2f-6f6079da111d
+
+
 
 ---
+
 
 ## Why
 
@@ -25,6 +28,7 @@ Existing tools are fragmented:
 ProxyFlow fixes this.
 
 ---
+
 
 ## What It Does
 
@@ -39,19 +43,19 @@ ProxyFlow fixes this.
 
 ---
 
+
 ## Tech Stack
 
 **Backend:** .NET 8 + YARP + EF Core + PostgreSQL + SignalR + Jint  
 **Frontend:** React 18 + Vite + Tailwind + Monaco Editor  
 **DevOps:** Docker Compose + GitHub Actions
 
+
 ## Demo
 
 [Watch the ProxyFlow dashboard recording(NO VIDEO BUGS)](docs/demo-video/proxyflow-dashboard-demo.webm).
 
 https://github.com/user-attachments/assets/4a0af711-59a1-4ce9-895a-8863a1ac470e
-
-
 
 
 ## Run in development
