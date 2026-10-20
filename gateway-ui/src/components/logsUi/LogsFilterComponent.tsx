@@ -4,113 +4,100 @@ import { PaginatedItemComponent } from "../layout/PaginatedItemComponent";
 
 interface LogsFilterComponentProps {
   logs: RequestLog[];
+  selectedOrigin: number | null;
   itemsPerPage?: number;
   isLoading: boolean;
   error: string | null;
+  hideSensitiveInfo: boolean;
 }
-
-interface AppliedFilters {
-  method: string;
-  statusCode: string;
-  path: string;
-}
-
-const METHODS = ["GET", "POST", "PUT", "DELETE"];
-const STATUS_CODES = [
-  { value: "200", label: "200 OK" },
-  { value: "404", label: "404 Not Found" },
-  { value: "500", label: "500 Internal Server Error" },
-];
 
 export const LogsFilterComponent: React.FC<LogsFilterComponentProps> = ({
   logs,
-  itemsPerPage = 5,
+  selectedOrigin,
+  itemsPerPage = 8,
   isLoading,
   error,
+  hideSensitiveInfo,
 }) => {
+  const [method, setMethod] = React.useState("all");
+  const [statusCode, setStatusCode] = React.useState("all");
+  const [path, setPath] = React.useState("");
 
-  const [methodFilter, setMethodFilter] = React.useState<string>("all");
-  const [statusCodeFilter, setStatusCodeFilter] = React.useState<string>("all");
-  const [pathFilter, setPathFilter] = React.useState<string>("all");
+  const availableLogs = React.useMemo(
+    () => selectedOrigin === null
+      ? logs
+      : logs.filter((log) => log.serviceOrigin === selectedOrigin),
+    [logs, selectedOrigin],
+  );
 
-  const paths: string[] = logs.map(log => log.url);
-  const [applied, setApplied] = React.useState<AppliedFilters>({
-    method: "all",
-    statusCode: "all",
-    path: "all"
-  });
+  const methods = React.useMemo(
+    () => Array.from(new Set(availableLogs.map((log) => log.method || "").filter(Boolean))).sort(),
+    [availableLogs],
+  );
+  const statusCodes = React.useMemo(
+    () => Array.from(new Set(availableLogs.map((log) => log.responseStatusCode))).sort((a, b) => a - b),
+    [availableLogs],
+  );
 
   const filteredLogs = React.useMemo(() => {
-    return logs.filter((entry) => {
-      const matchesMethod =
-        applied.method === "all" || entry.method === applied.method;
-      const matchesStatus =
-        applied.statusCode === "all" ||
-        entry.responseStatusCode === parseInt(applied.statusCode, 10);
-      const matchesPath =
-        applied.path === "all" || entry.url === applied.path;
-      return matchesMethod && matchesStatus && matchesPath;
-    });
-  }, [logs, applied]);
+    const normalizedPath = path.trim().toLocaleLowerCase();
+    return availableLogs.filter((log) =>
+      (method === "all" || (log.method || "") === method) &&
+      (statusCode === "all" || String(log.responseStatusCode ?? "") === statusCode) &&
+      (!normalizedPath || (log.url || "").toLocaleLowerCase().includes(normalizedPath)),
+    );
+  }, [availableLogs, method, path, statusCode]);
 
-  const handleSearch = () => {
-    setApplied({ method: methodFilter, statusCode: statusCodeFilter, path: pathFilter });
+  const resetFilters = () => {
+    setMethod("all");
+    setStatusCode("all");
+    setPath("");
   };
 
   return (
-    <div className="p-2 bg-red-200 mt-4 mb-10">
-      <div className="p-1 text-xl">Logs By Method</div>
+    <div className="logs-panel">
+      <div className="logs-toolbar">
+        <div>
+          <h3>Traffic</h3>
+          <p className="panel-caption">
+            Showing {filteredLogs.length} of {availableLogs.length} {availableLogs.length === 1 ? "request" : "requests"}
+          </p>
+        </div>
+        <button className="text-button" type="button" onClick={resetFilters}>
+          Clear filters
+        </button>
+      </div>
 
-      <select
-        value={methodFilter}
-        onChange={(e) => setMethodFilter(e.target.value)}
-        className="p-2 border rounded"
-      >
-        <option value="all">All Methods</option>
-        {METHODS.map((m) => (
-          <option key={m} value={m}>
-            {m}
-          </option>
-        ))}
-      </select>
+      <div className="filter-grid" aria-label="Filter request logs">
+        <label className="filter-field">
+          <span>Method</span>
+          <select value={method} onChange={(event) => setMethod(event.target.value)}>
+            <option value="all">All methods</option>
+            {methods.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label className="filter-field">
+          <span>Status</span>
+          <select value={statusCode} onChange={(event) => setStatusCode(event.target.value)}>
+            <option value="all">All statuses</option>
+            {statusCodes.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label className="filter-field path-filter">
+          <span>Path contains</span>
+          <input
+            type="search"
+            value={path}
+            onChange={(event) => setPath(event.target.value)}
+            placeholder="/api/orders"
+          />
+        </label>
+      </div>
 
-      <select
-        value={statusCodeFilter}
-        onChange={(e) => setStatusCodeFilter(e.target.value)}
-        className="p-2 border rounded"
-      >
-        <option value="all">All Status Codes</option>
-        {STATUS_CODES.map((s) => (
-          <option key={s.value} value={s.value}>
-            {s.label}
-          </option>
-        ))}
-      </select>
-
-      <select
-        value={pathFilter}
-        onChange={(e) => setPathFilter(e.target.value)}
-        className="p-2 border rounded"
-      >
-        <option value="all">All Paths</option>
-        {paths.map((s, index) => (
-          <option key={index} value={s}>
-            {s}
-          </option>
-        ))}
-      </select>
-
-      <button
-        className="p-2 bg-blue-500 text-white rounded ml-2"
-        onClick={handleSearch}
-      >
-        Search
-      </button>
-
-      <div className="mt-4">
+      <div className="logs-content">
         {isLoading ? (
           <div className="skeleton-list" role="status" aria-label="Loading request logs">
-            {Array.from({ length: 3 }, (_, index) => (
+            {Array.from({ length: 4 }, (_, index) => (
               <div className="skeleton-log-card" key={index} aria-hidden="true">
                 <span className="skeleton skeleton-line skeleton-line-wide" />
                 <span className="skeleton skeleton-line" />
@@ -120,15 +107,24 @@ export const LogsFilterComponent: React.FC<LogsFilterComponentProps> = ({
           </div>
         ) : error ? (
           <p className="state-message" role="alert">{error}</p>
-        ) : logs.length === 0 ? (
-          <p className="state-message">No request logs yet.</p>
+        ) : availableLogs.length === 0 ? (
+          <div className="empty-state">
+            <span className="empty-state-icon" aria-hidden="true">↗</span>
+            <strong>No requests yet</strong>
+            <p>Requests handled by the gateway will appear here.</p>
+          </div>
         ) : filteredLogs.length === 0 ? (
-          <p className="state-message">No request logs match these filters.</p>
+          <div className="empty-state">
+            <strong>No matching requests</strong>
+            <p>Try changing your filters or clear them to see all traffic.</p>
+            <button className="secondary-button" type="button" onClick={resetFilters}>Clear filters</button>
+          </div>
         ) : (
           <PaginatedItemComponent
             pItems={filteredLogs}
             itemsPerPage={itemsPerPage}
             dataType="logs"
+            hideSensitiveInfo={hideSensitiveInfo}
           />
         )}
       </div>

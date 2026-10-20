@@ -1,59 +1,70 @@
--- Accessing with pr Postgres com privilégios
-sudo -u postgres psql
+PostgreSQL setup for ProxyFlow (Linux / Bash)
+=============================================
 
--- Iniciando Database no Postgres com 
-postgres=# create database proxyflow;
-postgres=# create user dbo with encrypted password 'p@ssw0rd';
-postgres=# grant all privileges on database proxyflow to dbo;
-postgres=# ALTER DATABASE proxyflow OWNER TO dbo;
+The repository's docker-compose.yml defines a PostgreSQL 15 container named
+gateway-postgres. Its database is proxyflow, the application role is dbo, the
+container port is 5432, and the host port is 5433. Its data is persisted in the
+postgres_data Docker volume.
 
--- Schema personalizado para logs
-CREATE SCHEMA IF NOT EXISTS logschema;
-GRANT ALL ON SCHEMA logschema TO dbo;
-ALTER ROLE dbo SET search_path TO logschema;
+Recommended: run only the database container
+--------------------------------------------
+From the repository root:
 
-GRANT USAGE, CREATE ON SCHEMA logschema TO dbo;
+    docker compose up -d postgres
+    docker compose ps
+    docker compose exec -T postgres pg_isready -U dbo -d proxyflow
 
-GRANT ALL ON ALL TABLES IN SCHEMA logschema TO dbo;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA logschema TO dbo;
-ALTER DEFAULT PRIVILEGES IN SCHEMA logschema GRANT ALL ON TABLES TO dbo;
-ALTER DEFAULT PRIVILEGES IN SCHEMA logschema GRANT ALL ON SEQUENCES TO dbo;
+Initialize or update the log schema using the idempotent SQL scripts:
 
--- Create the RequestLogs table based on the image schema
-CREATE TABLE IF NOT EXISTS logschema."RequestLogs" (
-    "Id" BIGSERIAL PRIMARY KEY,
-    "Headers" TEXT,
-    "Body" TEXT,
-    "Method" VARCHAR(255),
-    "TimeStamp" VARCHAR(255),
-    "ResponseStatusCode" INT,
-    "ResponseBody" TEXT,
-    "Url" VARCHAR(500),
-    "ClientIp" VARCHAR(100),    
-    "ServiceOrigin" VARCHAR(10),    
-);
+    docker compose exec -T postgres psql -U dbo -d proxyflow -v ON_ERROR_STOP=1 < Gateway.Api/Database/Models/Scripts/Script1.sql
+    docker compose exec -T postgres psql -U dbo -d proxyflow -v ON_ERROR_STOP=1 < Gateway.Api/Database/Models/Scripts/Script2.sql
 
--- Create indexes for better query performance (optional but recommended)
-CREATE INDEX IF NOT EXISTS idx_requestlogs_timestamp ON logschema."RequestLogs" ("TimeStamp");
-CREATE INDEX IF NOT EXISTS idx_requestlogs_method ON logschema."RequestLogs" ("Method");
-CREATE INDEX IF NOT EXISTS idx_requestlogs_statuscode ON logschema."RequestLogs" ("ResponseStatusCode");
-CREATE INDEX IF NOT EXISTS idx_requestlogs_clientip ON logschema."RequestLogs" ("ClientIp");
-CREATE INDEX IF NOT EXISTS idx_requestlogs_url ON logschema."RequestLogs" ("Url");
-CREATE INDEX IF NOT EXISTS idx_requestlogs_serviceorigin ON logschema."RequestLogs" ("ServiceOrigin");
+Connect from this host with psql:
 
--- Grant privileges on the table and its sequence
-GRANT ALL ON logschema."RequestLogs" TO dbo;
-GRANT ALL ON SEQUENCE logschema."RequestLogs_Id_seq" TO dbo;
+    psql -h localhost -p 5433 -U dbo -d proxyflow
 
--- Comment for documentation
-COMMENT ON TABLE logschema."RequestLogs" IS 'Table to store proxy request and response logs';
-COMMENT ON COLUMN logschema."RequestLogs"."Id" IS 'Auto-incrementing primary key (BIGSERIAL)';
-COMMENT ON COLUMN logschema."RequestLogs"."Headers" IS 'Request headers (TEXT)';
-COMMENT ON COLUMN logschema."RequestLogs"."Body" IS 'Request body (TEXT)';
-COMMENT ON COLUMN logschema."RequestLogs"."Method" IS 'HTTP method (VARCHAR 255)';
-COMMENT ON COLUMN logschema."RequestLogs"."TimeStamp" IS 'Timestamp of the request (VARCHAR 255)';
-COMMENT ON COLUMN logschema."RequestLogs"."ResponseStatusCode" IS 'HTTP response status code (INT)';
-COMMENT ON COLUMN logschema."RequestLogs"."ResponseBody" IS 'Response body (TEXT)';
-COMMENT ON COLUMN logschema."RequestLogs"."Url" IS 'Request URL (VARCHAR 500)';
-COMMENT ON COLUMN logschema."RequestLogs"."ClientIp" IS 'Client IP address (VARCHAR 100)';
-COMMENT ON COLUMN logschema."RequestLogs"."ServiceOrigin" IS 'Origin of the service (VARCHAR 10)';
+The password is configured by POSTGRES_PASSWORD in docker-compose.yml. Do not
+use the sample development credentials in production.
+
+Run the API as a container for local development
+------------------------------------------------
+The container reaches PostgreSQL by the Compose service name postgres on port
+5432. The frontend on this host expects the API at localhost:5025:
+
+    ASPNETCORE_ENVIRONMENT=Development API_HOST_PORT=5025 docker compose up -d --build
+
+This starts both the database and API containers. Swagger is available at
+http://localhost:5025/swagger/index.html. To start only the API after starting
+the database, run:
+
+    ASPNETCORE_ENVIRONMENT=Development API_HOST_PORT=5025 docker compose up -d --build gateway-api
+
+Run the API directly on the host instead
+----------------------------------------
+When the API runs on the host, connect it to the database's published host port
+(5433), not the container-only port (5432). Supply a valid connection string
+through the ASP.NET Core configuration environment variable:
+
+    ConnectionStrings__DefaultConnection='Host=localhost;Port=5433;Database=proxyflow;Username=dbo;Password=YOUR_DB_PASSWORD' ASPNETCORE_ENVIRONMENT=Development dotnet run --project Gateway.Api/Gateway.Api.csproj --urls http://localhost:5025
+
+In another terminal, run the React development server:
+
+    cd gateway-ui
+    npm install
+    npm run dev
+
+Browser URLs:
+    Frontend: http://localhost:5173/
+    Backend Swagger: http://localhost:5025/swagger/index.html
+
+Useful database/container commands
+----------------------------------
+
+    docker compose logs -f postgres
+    docker compose exec postgres psql -U dbo -d proxyflow
+    docker compose stop postgres
+    docker compose start postgres
+
+Stopping containers does not delete the postgres_data volume. Do not run
+"docker compose down -v" unless you explicitly intend to permanently delete
+the database volume and its data.

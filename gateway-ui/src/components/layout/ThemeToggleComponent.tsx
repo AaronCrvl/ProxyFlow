@@ -1,20 +1,18 @@
 import React from "react";
-import {useTheme} from "../../contexts/themeContext";
+import { useTheme } from "../../contexts/theme";
 
 const ThemeToggleComponent: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
 
-  const handleToggle = () => {
-    toggleTheme();
-  };
-
   return (
     <button
-      className="p-2 bg-blue-500 text-white rounded dark:bg-blue-400 dark:text-gray-900"
-      onClick={handleToggle}
-      aria-label="Toggle dark mode"
+      className="theme-toggle"
+      onClick={toggleTheme}
+      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+      type="button"
     >
-      {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+      <span aria-hidden="true">{theme === "light" ? "☾" : "☀"}</span>
+      {theme === "light" ? "Dark mode" : "Light mode"}
     </button>
   );
 };

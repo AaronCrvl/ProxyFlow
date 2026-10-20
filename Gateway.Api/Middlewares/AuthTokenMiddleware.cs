@@ -34,11 +34,11 @@ namespace Gateway.Api.Middlewares
                 context.Request.Headers.Authorization = $"Bearer {accessToken}";
             }
 
-            if (!context.Request.Headers.ContainsKey("Authorization"))
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
-            }
+            // if (!context.Request.Headers.ContainsKey("Authorization"))
+            // {
+            //     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            //     return;
+            // }
 
             await next(context);
         }

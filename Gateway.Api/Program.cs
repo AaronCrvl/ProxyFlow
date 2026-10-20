@@ -95,6 +95,7 @@ app.Map("/products/getProducts", () =>
             inStock = false
         }
     };
+    return products;
 });
 
 app.Map("/products/getProduct/{id}", (int id) =>
@@ -170,6 +171,7 @@ app.Map("/orders/getOrders", () =>
             orderDate = "2024-01-14"
         }
     };
+    return orders;
 });
 
 app.Map("/orders/getOrder/{id}", (int id) =>
@@ -248,6 +250,7 @@ app.Map("/employees/getEmployees", () =>
             salary = 72000
         }
     };
+    return employees;
 });
 
 app.Map("/employees/getEmployee/{id}", (int id) =>
@@ -327,6 +330,7 @@ app.Map("/posts/getPosts", () =>
             published = false
         }
     };
+    return posts;
 });
 
 app.Map("/posts/getPost/{id}", (int id) =>

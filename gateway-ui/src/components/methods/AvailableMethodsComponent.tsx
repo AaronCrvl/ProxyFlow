@@ -28,7 +28,6 @@ const AvailableMethodsComponent: React.FC = () => {
 
     return (
         <div className="available-methods-component">
-            <h2>Available Methods</h2>
             {isLoading ? (
                 <div className="skeleton-list" role="status" aria-label="Loading available methods">
                     {Array.from({ length: 3 }, (_, index) => (
@@ -43,13 +42,22 @@ const AvailableMethodsComponent: React.FC = () => {
             ) : methods.length === 0 ? (
                 <p className="state-message">No API methods are available.</p>
             ) : (
-                <ul>
+                <div className="methods-table-wrap">
+                <table className="methods-table">
+                    <thead>
+                        <tr><th>Method</th><th>Route</th><th>Group</th></tr>
+                    </thead>
+                    <tbody>
                     {methods.map((method, index) => (
-                        <li key={`${method.method}-${method.path}-${index}`}>
-                            {method.groupName} - {method.method} - {method.path}
-                        </li>
+                        <tr key={`${method.method}-${method.path}-${index}`}>
+                            <td><span className={`method-badge method-${method.method.toLowerCase()}`}>{method.method || "HTTP"}</span></td>
+                            <td><code>{method.path}</code></td>
+                            <td>{method.groupName || "API"}</td>
+                        </tr>
                     ))}
-                </ul>
+                    </tbody>
+                </table>
+                </div>
             )}
         </div>
     );

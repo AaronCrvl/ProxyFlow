@@ -12,6 +12,7 @@ namespace Gateway.Api.Helpers
             headers = req.Headers,
             method = req.Method,
             timestamp = req.TimeStamp,
+            url = req.Url,
             clientIp = req.ClientIp,
             responseBody = req.ResponseBody,
             responseStatusCode = req.ResponseStatusCode,

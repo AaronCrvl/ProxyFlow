@@ -1,37 +1,30 @@
 # Sprint 1 — Sprint Review
 
 ## Branch
- - ProxyCore
+- `ProxyCore`
+
+## Pull request
+- [#2 — Sprint 1 - Proxy Core](https://github.com/AaronCrvl/ProxyFlow/pull/2), merged into `master` on 2026-06-09.
+- Source branch `ProxyCore` ended at `c32b8be`; the PR contains seven commits and states a working reverse proxy with a log viewer as its deliverable.
 
 ## Goal
-- Deliver core API gateway routing, authentication, and basic observability for initial integration.
+- Deliver a working reverse proxy that records requests and displays them in a React dashboard.
 
-## Summary of recent code changes
-- Features
-    - Implemented request routing and proxying for backend services. (Branch: ProxyCore, Commits: 34405e0b4f9708dbdc81ed9d85920b54c5bb835a..e0d843f1725607779e5ddc569bc3aaf581fe93a4)
-    - Added JWT-based authentication middleware and token validation. (Commit: e0d843f1725607779e5ddc569bc3aaf581fe93a4)    
-- DevOps / CI    
-    - Dockerfile optimized and image size reduced. (Commit: 87b51e7c24a48558029de8b308ad1b6b9f3145ae)
-- Tests & docs
-    - Unit tests added for routing and auth modules (coverage: ___%).
-    - Basic usage and deployment docs created (docs/Sprint1.md, README updates).
+## Summary of changes
+- **Gateway:** configured YARP reverse-proxy routing and request-logging middleware.
+- **Persistence:** stored request logs in PostgreSQL through Entity Framework Core.
+- **Frontend:** created a React/Vite log viewer with filtering and pagination.
+- **Authentication:** added authentication middleware. The PR plan describes API-key validation from configuration; it does not document JWT usage.
+- **Packaging and tests:** added Docker support for the backend and PostgreSQL, and middleware tests. The PR does not report a coverage percentage or test-run result.
 
 ## Retrospective — What went well
-- Delivered core routing and auth within sprint.
-- CI pipeline reduced manual verification time.
+- The PR record confirms that the reverse-proxy and log-viewer deliverable was merged.
 
 ## Retrospective — What to improve
-- Reduce PR review latency.
-- Increase test coverage for error scenarios.
-- Finalize secrets/config management before production deploy.
+- No retrospective notes or measured follow-up items are recorded in the PR.
 
-## Action items (owner — due)
-- Implement secrets management (Owner: @AaronCrvl)
-- Expand integration tests for edge cases (Owner: @AaronCrvl)
-- Schedule production rollout and runbook (Owner: @AaronCrvl)
+## Action items
+- No owner-and-due-date action items are recorded in the PR.
 
 ## Next sprint focus
-- Production deployment and rollout plan.
-- Rate limiting and circuit breaker implementation.
-- Observability: traces and dashboards.
-- Contract alignment with downstream services.
+- The next sprint is documented in [Sprint 2](Sprint2.md).
